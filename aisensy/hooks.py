@@ -213,3 +213,21 @@ app_license = "MIT"
 # auth_hooks = [
 # 	"aisensy.auth.validate"
 # ]
+
+doc_events = {
+    "*": {
+        # "before_insert": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "after_insert": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "before_validate": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "validate": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "on_update": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        "before_submit": "aisensy.aisensy.doctype.aisensy_notification.aisensy_notification.run_server_script_for_doc_event",
+        "on_submit": "aisensy.aisensy.doctype.aisensy_notification.aisensy_notification.run_server_script_for_doc_event",
+        # "before_cancel": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "on_cancel": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "on_trash": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "after_delete": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "before_update_after_submit": "frappe_whatsapp.utils.run_server_script_for_doc_event",
+        # "on_update_after_submit": "frappe_whatsapp.utils.run_server_script_for_doc_event"
+    }
+}

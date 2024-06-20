@@ -7,6 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.core.doctype.server_script.server_script_utils import EVENT_MAP
 
+
 class AisensyNotification(Document):
     def send_template_message(self, doc: Document):
         template_params = []
@@ -14,29 +15,62 @@ class AisensyNotification(Document):
         for row in self.fields:
             field_value = frappe.db.get_value(self.reference_document_type, doc.name, row.field_name)
             template_params.append(field_value)
-        send_message_api(self.campaign_name, mobile_no, template_params)
+        send_message_api(self, mobile_no, template_params, doc.doctype, doc.name)
 
 
-def send_message_api(campaign_name, mobile_no, template_params):
+def send_message_api(self, mobile_no, template_params, doctype_name, record_name):
     url = frappe.db.get_single_value("Aisensy Settings", "url")
     api_key = frappe.db.get_single_value("Aisensy Settings", "api_key")
     user_name = frappe.db.get_single_value("Aisensy Settings", "user_name")
+    host_url = frappe.db.get_single_value("Aisensy Settings", "host_url")
+    default_image_url = frappe.db.get_single_value("Aisensy Settings", "default_image_url")
+    file_url = attachment_url(self, doctype_name, record_name)
 
-    payload = json.dumps({
-    "apiKey": api_key,
-    "campaignName": campaign_name,
-    "destination": mobile_no,
-    "userName": user_name,
-    "templateParams": template_params,
-    "media": {
-        "url": "https://aisensy-project-media-library-stg.s3.ap-south-1.amazonaws.com/IMAGE/5f450b00f71d36faa1d02bc4/9884334_graffiti%20dsdjpg",
-        "filename": "demo-file"
-    }
-    })
+    payload = {
+                "apiKey": api_key,
+                "campaignName": self.campaign_name,
+                "destination": mobile_no,
+                "userName": user_name,
+                "templateParams": template_params,
+            }
+    
+    if self.send_attachment and file_url:
+        file_url = host_url+file_url
+        media_payload = {"media": {"url": file_url,
+                       "filename": "demo-file"
+                        }}
+    else:
+        media_payload = {"media": {"url": default_image_url,
+                       "filename": "demo-file"
+                        }}
+    payload.update(media_payload)
+    payload = json.dumps(payload)
     headers = {'Content-Type': 'application/json'}
-    response = requests.request("POST", url, headers=headers, data=payload)
 
-    return response
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        frappe.get_doc({
+            "doctype": "Aisensy Notification Log",
+            "api_status": "Success",
+            "response" : response,
+            "source_doctype": doctype_name,
+            "document_name": record_name,
+            "api_response": response.text
+        }).save(ignore_permissions=True)
+    except Exception as e:
+        frappe.msgprint(f"Failed to trigger Aisensy message",
+            indicator="red",
+            alert=True
+        )
+        frappe.get_doc({
+            "doctype": "Aisensy Notification Log",
+            "api_status": "Failed",
+            "response" : response,
+            "source_doctype": doctype_name,
+            "document_name": record_name,
+            "api_response": e
+        }).insert()
 
 
 def run_server_script_for_doc_event(doc, event):
@@ -73,6 +107,11 @@ def get_notifications_map():
             ).setdefault(
                 notification.doctype_event, []
             ).append(notification.name)
-    # frappe.cache().set_value("aisensy_notification_map", notification_map)
-
     return notification_map
+
+
+def attachment_url(self, doctype_name, record_name):
+    if not self.send_attachment:
+        return
+    file_url = frappe.db.get_value("File", {"attached_to_doctype": doctype_name, "attached_to_name": record_name}, "file_url")
+    return file_url

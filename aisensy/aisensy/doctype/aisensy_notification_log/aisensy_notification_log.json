@@ -1,60 +1,62 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2024-06-14 22:42:20.518735",
+ "creation": "2024-06-19 20:21:50.879540",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "api_key",
-  "user_name",
-  "url",
-  "host_url",
-  "default_image_url"
+  "api_status",
+  "response",
+  "source_doctype",
+  "document_name",
+  "api_response"
  ],
  "fields": [
   {
-   "fieldname": "api_key",
+   "fieldname": "api_status",
    "fieldtype": "Data",
-   "label": "Api key"
+   "label": "API Status"
   },
   {
-   "fieldname": "user_name",
+   "fieldname": "response",
    "fieldtype": "Data",
-   "label": "User Name"
+   "label": "Response"
   },
   {
-   "fieldname": "url",
-   "fieldtype": "Data",
-   "label": "API URL"
+   "fieldname": "source_doctype",
+   "fieldtype": "Link",
+   "label": "Source Doctype",
+   "options": "DocType"
   },
   {
-   "fieldname": "host_url",
+   "fieldname": "document_name",
    "fieldtype": "Data",
-   "label": "Host URL"
+   "label": "Document Name"
   },
   {
-   "fieldname": "default_image_url",
-   "fieldtype": "Data",
-   "label": "Default Image URL"
+   "fieldname": "api_response",
+   "fieldtype": "Text",
+   "label": "API Response"
   }
  ],
  "index_web_pages_for_search": 1,
- "issingle": 1,
  "links": [],
- "modified": "2024-06-21 01:49:13.173736",
+ "modified": "2024-06-19 20:44:51.575354",
  "modified_by": "Administrator",
  "module": "Aisensy",
- "name": "Aisensy Settings",
+ "name": "Aisensy Notification Log",
  "owner": "Administrator",
  "permissions": [
   {
    "create": 1,
    "delete": 1,
    "email": 1,
+   "export": 1,
    "print": 1,
    "read": 1,
+   "report": 1,
    "role": "System Manager",
    "share": 1,
    "write": 1

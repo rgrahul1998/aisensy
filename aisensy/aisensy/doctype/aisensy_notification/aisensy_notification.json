@@ -13,6 +13,7 @@
   "field_name",
   "doctype_event",
   "campaign_name",
+  "send_attachment",
   "fields"
  ],
  "fields": [
@@ -52,11 +53,17 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_attachment",
+   "fieldtype": "Check",
+   "label": "Send Attachment"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-15 00:05:45.572235",
+ "modified": "2024-06-21 00:28:11.527079",
  "modified_by": "Administrator",
  "module": "Aisensy",
  "name": "Aisensy Notification",
